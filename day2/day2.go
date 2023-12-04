@@ -82,8 +82,8 @@ func Day2() {
 	var setPowers []int
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		possible, gameId, serPower := isGamePossible(scanner.Text())
-		setPowers = append(setPowers, serPower)
+		possible, gameId, setPower := isGamePossible(scanner.Text())
+		setPowers = append(setPowers, setPower)
 		if possible {
 			possibleIds = append(possibleIds, gameId)
 		}
