@@ -32,10 +32,14 @@ func isSymbol(char rune) bool {
 	return char != '.' && unicode.IsDigit(char) == false
 }
 
-// checks if the part of the array is a PartNumber
-func isPartNumber(arr [][]rune, pos position, length int) bool {
-	retVal := false
+func isGear(char rune) bool {
+	return char == '*'
+}
 
+// checks if the part of the array is a PartNumber
+func isPartNumber(arr [][]rune, pos position, length int) (bool, position) {
+	retVal := false
+	var partNumPosition position
 	for i := 0; i < length; i++ {
 		currPos := pos.Offset(i, 0)
 		offsets := []position{
@@ -57,6 +61,10 @@ func isPartNumber(arr [][]rune, pos position, length int) bool {
 			if symbol {
 				fmt.Printf("detected symbol: %q \n", arr[offset.y][offset.x])
 				retVal = true
+				if isGear(arr[offset.y][offset.x]) {
+					partNumPosition = offset
+				}
+
 				break
 			}
 		}
@@ -65,7 +73,7 @@ func isPartNumber(arr [][]rune, pos position, length int) bool {
 		}
 	}
 
-	return retVal
+	return retVal, partNumPosition
 }
 
 func isBeginningOfNumber(arr [][]rune, pos position) (isNumber bool, number, length int) {
@@ -94,13 +102,15 @@ func isBeginningOfNumber(arr [][]rune, pos position) (isNumber bool, number, len
 	return isNumber, number, length
 }
 
-func getPartNumbers(arr [][]rune) []int {
+func getPartNumbers(arr [][]rune) (numbers []int, gears map[position][]int) {
 	pos := position{
 		0,
 		0,
 		len(arr), len(arr),
 	}
-	var numbers []int
+	gears = make(map[position][]int)
+	//var gears map[position][]int
+	//var numbers []int
 	for i := 0; i < pos.xMax; i++ {
 		numberEnd := -1
 		for j := 0; j < pos.yMax; j++ {
@@ -113,13 +123,20 @@ func getPartNumbers(arr [][]rune) []int {
 			pos.y = i
 			fmt.Printf("current value: %q", arr[pos.y][pos.x])
 			isNumber, number, length := isBeginningOfNumber(arr, pos)
-			if isNumber && isPartNumber(arr, pos, length) {
+			if isNumber == false {
+				continue
+			}
+			isPartNumber, gearPosition := isPartNumber(arr, pos, length)
+			if isPartNumber {
 				numbers = append(numbers, number)
 				numberEnd = pos.x + length
 			}
+			if gearPosition != (position{}) {
+				gears[gearPosition] = append(gears[gearPosition], number)
+			}
 		}
 	}
-	return numbers
+	return numbers, gears
 }
 func getNumberOfLines(fileName string) int {
 	linesCount := 0
@@ -156,11 +173,27 @@ func Day3() {
 		}
 		i++
 	}
-	numbers := getPartNumbers(arr)
+	numbers, gears := getPartNumbers(arr)
 	fmt.Println(numbers)
 	sum := 0
 	for _, value := range numbers {
 		sum += value
 	}
+	var gearRatios []int
+	for _, ints := range gears {
+		if len(ints) != 2 {
+			continue
+		}
+		ratio := 1
+		for _, val := range ints {
+			ratio *= val
+		}
+		gearRatios = append(gearRatios, ratio)
+	}
+	gearRatioSum := 0
+	for _, ratio := range gearRatios {
+		gearRatioSum += ratio
+	}
 	fmt.Printf("sum: %d", sum)
+	fmt.Printf("sum: %d", gearRatioSum)
 }
