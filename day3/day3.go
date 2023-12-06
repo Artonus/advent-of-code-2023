@@ -59,7 +59,7 @@ func isPartNumber(arr [][]rune, pos position, length int) (bool, position) {
 			}
 			symbol := isSymbol(arr[offset.y][offset.x])
 			if symbol {
-				fmt.Printf("detected symbol: %q \n", arr[offset.y][offset.x])
+				//fmt.Printf("detected symbol: %q \n", arr[offset.y][offset.x])
 				retVal = true
 				if isGear(arr[offset.y][offset.x]) {
 					partNumPosition = offset
@@ -109,8 +109,7 @@ func getPartNumbers(arr [][]rune) (numbers []int, gears map[position][]int) {
 		len(arr), len(arr),
 	}
 	gears = make(map[position][]int)
-	//var gears map[position][]int
-	//var numbers []int
+
 	for i := 0; i < pos.xMax; i++ {
 		numberEnd := -1
 		for j := 0; j < pos.yMax; j++ {
@@ -121,7 +120,7 @@ func getPartNumbers(arr [][]rune) (numbers []int, gears map[position][]int) {
 			numberEnd = -1
 			pos.x = j
 			pos.y = i
-			fmt.Printf("current value: %q", arr[pos.y][pos.x])
+			//fmt.Printf("current value: %q", arr[pos.y][pos.x])
 			isNumber, number, length := isBeginningOfNumber(arr, pos)
 			if isNumber == false {
 				continue
@@ -174,7 +173,7 @@ func Day3() {
 		i++
 	}
 	numbers, gears := getPartNumbers(arr)
-	fmt.Println(numbers)
+	//fmt.Println(numbers)
 	sum := 0
 	for _, value := range numbers {
 		sum += value
