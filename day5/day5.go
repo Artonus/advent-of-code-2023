@@ -14,6 +14,10 @@ type mapper struct {
 	max    int
 	offset int
 }
+type seedRange struct {
+	start int
+	count int
+}
 
 func (m *mapper) IsValueInRange(value int) bool {
 	return value >= m.min && value <= m.max
@@ -70,48 +74,46 @@ func parseRange(line string) mapper {
 	}
 }
 
-func getSeeds(line string) []int {
+func getSeeds(line string) (seeds []int, seeds2 []seedRange) {
 	split := strings.Split(line, ":")
 	numStrings := strings.Split(split[1], " ")
-
-	var numbers []int
-	for _, numString := range numStrings {
-		if len(numString) == 0 {
-			continue
+	var filtered []string
+	for i := 0; i < len(numStrings); i++ {
+		if len(numStrings[i]) > 0 {
+			filtered = append(filtered, numStrings[i])
 		}
+	}
+
+	startTmp := 0
+	for i := 0; i < len(filtered); i++ {
+		numString := filtered[i]
 		num, err := strconv.Atoi(strings.TrimSpace(numString))
 		if err != nil {
 			panic(err)
 		}
-		numbers = append(numbers, num)
+		seeds = append(seeds, num)
+		if i%2 != 0 {
+			length := seeds[i]
+			seedRng := seedRange{
+				start: startTmp,
+				count: length,
+			}
+			seeds2 = append(seeds2, seedRng)
+		} else {
+			startTmp = seeds[i]
+		}
 	}
-	return numbers
+	return seeds, seeds2
 }
 func getDestination(line string) string {
 	cleared := strings.Replace(line, " map:", "", 1)
 	split := strings.Split(cleared, "-to-")
 	return split[1]
 }
-func convert(value int, node *ConverterNode) int {
-	converter := node.Value
-	retVal := converter.Convert(value)
-	if node.Next != nil {
-		return convert(retVal, node.Next)
-	}
-	return retVal
-}
-func Day5() {
-
-	fileName := "day5/data.txt"
-	file, err := os.Open(fileName)
-	if err != nil {
-		panic(err)
-	}
+func readFile(file *os.File) (list LinkedList, seeds []int, scenario2Seeds []seedRange) {
 	scanner := bufio.NewScanner(file)
-
-	list := LinkedList{}
+	list = LinkedList{}
 	var currConverter *Converter
-	var seeds []int
 	for scanner.Scan() {
 		line := scanner.Text()
 		if len(line) == 0 && currConverter != nil {
@@ -119,7 +121,7 @@ func Day5() {
 			continue
 		}
 		if strings.HasPrefix(line, "seeds:") {
-			seeds = getSeeds(line)
+			seeds, scenario2Seeds = getSeeds(line)
 			continue
 		}
 		if strings.HasSuffix(line, "map:") {
@@ -136,7 +138,24 @@ func Day5() {
 		}
 	}
 	list.Append(currConverter)
-	//todo: convert seeds
+	return list, seeds, scenario2Seeds
+}
+func convert(value int, node *ConverterNode) int {
+	converter := node.Value
+	retVal := converter.Convert(value)
+	if node.Next != nil {
+		return convert(retVal, node.Next)
+	}
+	return retVal
+}
+func Day5() {
+
+	fileName := "day5/data.txt"
+	file, err := os.Open(fileName)
+	if err != nil {
+		panic(err)
+	}
+	list, seeds, scenario2Seeds := readFile(file)
 	var converted []int
 	minim := math.MaxInt32
 	for _, seed := range seeds {
@@ -144,7 +163,19 @@ func Day5() {
 		val := convert(seed, head)
 		converted = append(converted, val)
 		minim = min(val, minim)
+	}
+	fmt.Printf("minimal: %d \n", minim)
+	minimScenario2 := math.MaxInt32
+	for _, seedPair := range scenario2Seeds {
+		head := list.Head
+		for i := 0; i < seedPair.count; i++ {
+			seed := seedPair.start + i
+			val := convert(seed, head)
+			minimScenario2 = min(val, minimScenario2)
+			//fmt.Printf("val: %d", val)
+		}
 
 	}
-	fmt.Printf("minimal: %d", minim)
+
+	fmt.Printf("minimal scenario 2: %d", minimScenario2)
 }
