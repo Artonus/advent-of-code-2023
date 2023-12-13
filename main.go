@@ -1,6 +1,6 @@
 package main
 
-import "advent-of-code-2023/day06"
+import "advent-of-code-2023/day07"
 
 func main() {
 	//day01.Day1()
@@ -8,5 +8,6 @@ func main() {
 	//day03.Day3()
 	//day04.Day4()
 	//day05.Day5()
-	day06.Day6()
+	//day06.Day6()
+	day07.Day7()
 }
