@@ -1,4 +1,4 @@
-package day3
+package day03
 
 import (
 	"bufio"
@@ -151,7 +151,7 @@ func getNumberOfLines(fileName string) int {
 }
 
 func Day3() {
-	fileName := "day3/data.txt"
+	fileName := "day03/data.txt"
 	linesCount := getNumberOfLines(fileName)
 
 	file, err := os.Open(fileName)

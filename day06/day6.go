@@ -1,4 +1,4 @@
-package day6
+package day06
 
 import (
 	"bufio"
@@ -118,7 +118,7 @@ func getRaces(fileName string) []race {
 	return races
 }
 func Day6() {
-	fileName := "day6/data.txt"
+	fileName := "day06/data.txt"
 	races := getRaces(fileName)
 
 	waysToWin := make([]int, len(races))

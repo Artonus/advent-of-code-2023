@@ -1,4 +1,4 @@
-package day1
+package day01
 
 import (
 	"bufio"
@@ -29,7 +29,7 @@ func isDigit(text string, reverse bool) (bool, rune) {
 
 func Day1() {
 
-	file, err := os.Open("day1/data.txt")
+	file, err := os.Open("day01/data.txt")
 	if err != nil {
 		fmt.Printf("error: %s", err.Error())
 		return

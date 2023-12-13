@@ -1,4 +1,4 @@
-package day2
+package day02
 
 import (
 	"bufio"
@@ -73,7 +73,7 @@ func isGamePossible(gamesString string) (isPossible bool, setId, setPower int) {
 }
 
 func Day2() {
-	file, err := os.Open("day2/data.txt")
+	file, err := os.Open("day02/data.txt")
 	if err != nil {
 		fmt.Printf("error: %s", err.Error())
 		return

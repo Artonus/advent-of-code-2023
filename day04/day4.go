@@ -1,4 +1,4 @@
-package day4
+package day04
 
 import (
 	"bufio"
@@ -88,7 +88,7 @@ func readSketchcards(fileName string) map[int]*sketchcard {
 	return sketchcards
 }
 func Day4() {
-	fileName := "day4/data.txt"
+	fileName := "day04/data.txt"
 
 	cardPoints := make(map[int]int)
 	sketchCards := readSketchcards(fileName)

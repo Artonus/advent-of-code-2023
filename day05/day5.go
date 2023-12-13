@@ -1,4 +1,4 @@
-package day5
+package day05
 
 import (
 	"bufio"
@@ -150,7 +150,7 @@ func convert(value int, node *ConverterNode) int {
 }
 func Day5() {
 
-	fileName := "day5/data.txt"
+	fileName := "day05/data.txt"
 	file, err := os.Open(fileName)
 	if err != nil {
 		panic(err)
