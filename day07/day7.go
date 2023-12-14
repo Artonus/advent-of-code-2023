@@ -41,6 +41,9 @@ func getHandScore(hand string) int {
 	for _, i := range cardsCount {
 		maxVal = max(maxVal, i)
 	}
+	if len(cardsCount) == 0 && jCount == 5 {
+		cardsCount['J'] = jCount
+	}
 	maxVal += jCount
 
 	if len(cardsCount) == 1 {
@@ -123,16 +126,16 @@ func readHands(fileName string) []hand {
 func Day7() {
 	fileName := "day07/data.txt"
 	hands := readHands(fileName)
-	for _, hnd := range hands {
-		fmt.Printf("hand: %s, bid: %d, score: %d \n", hnd.hand, hnd.bid, hnd.handType)
-	}
+	//for _, hnd := range hands {
+	//	//fmt.Printf("hand: %s, bid: %d, score: %d \n", hnd.hand, hnd.bid, hnd.handType)
+	//}
 	ordered := orderHands(hands)
 
 	totalWinnings := 0
 	for i := 0; i < len(ordered); i++ {
 		winning := ordered[i].bid * (i + 1)
 		totalWinnings += winning
-		fmt.Printf("rank: %d, hand: %s \n", i, ordered[i].hand)
+		fmt.Printf("rank: %d, hand: %s, score: %d \n", i, ordered[i].hand, ordered[i].handType)
 	}
 
 	fmt.Printf("total wins: %d", totalWinnings)
