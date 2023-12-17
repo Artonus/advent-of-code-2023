@@ -1,10 +1,12 @@
 package day08
 
 import (
+	"advent-of-code-2023/pkg/math"
 	"bufio"
 	"fmt"
 	"os"
 	"strings"
+	"sync"
 )
 
 var destination = "ZZZ"
@@ -56,12 +58,66 @@ func getDirections(fileName string) (directions string, maps map[string]directio
 	}
 	return directions, maps
 }
+func getStartingSteps(directions map[string]direction) []string {
+	var steps []string
+	for key, _ := range directions {
+		if strings.HasSuffix(key, "A") {
+			steps = append(steps, key)
+		}
+	}
+	return steps
+}
+func areAllDestinationSteps(steps []string) bool {
+	for _, step := range steps {
+		if !strings.HasSuffix(step, "Z") {
+			return false
+		}
+	}
+	return true
+}
 
+func getSteps2(maps map[string]direction, startingPoints []string, directions string) int {
+	var (
+		results []int
+		wg      sync.WaitGroup
+		lcm     int
+	)
+	results = make([]int, len(startingPoints))
+	for i := 0; i < len(startingPoints); i++ {
+		wg.Add(1)
+		go func(start string, res *int) {
+			defer wg.Done()
+
+			*res = 0
+			dirLen := len(directions)
+			current := start
+			for !strings.HasSuffix(current, "Z") {
+				next := directions[*res%dirLen]
+				if string(next) == "L" {
+					current = maps[current].l
+
+				}
+				if string(next) == "R" {
+					current = maps[current].r
+				}
+				*res++
+			}
+		}(startingPoints[i], &results[i])
+
+		// use gorutines to calculate number of steps for each of the starting points,
+		// then use the lowest common multiplication of them all
+	}
+	wg.Wait()
+	lcm = math.LCM(results[0], results[1:])
+
+	return lcm
+}
 func Day8() {
 	fileName := "day08/data.txt"
 
 	directions, maps := getDirections(fileName)
-	
+
+	stepsList := getStartingSteps(maps)
 	current := start
 	steps := 0
 	dirLen := len(directions)
@@ -69,11 +125,16 @@ func Day8() {
 		next := directions[steps%dirLen]
 		if string(next) == "L" {
 			current = maps[current].l
+
 		}
 		if string(next) == "R" {
 			current = maps[current].r
 		}
 		steps++
 	}
-	fmt.Printf("It took %d steps to reach ZZZ", steps)
+	fmt.Printf("It took %d steps to reach ZZZ\n", steps)
+
+	steps2 := getSteps2(maps, stepsList, directions)
+	fmt.Printf("It took %d steps to reach all Z's", steps2)
+
 }
